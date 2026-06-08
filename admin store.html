@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Faiz Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Login Page */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 350px;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .login-box button:hover {
+            background: #357abd;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            right: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: #4a90e2;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .menu-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .menu-item:hover {
+            background: #f0f8ff;
+            padding-left: 25px;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+            margin-right: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-area img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .logo-area h1 {
+            font-size: 20px;
+            color: #333;
+        }
+
+        .menu-toggle {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .content-area {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 500px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .btn-submit {
+            background: #4a90e2;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .app-list, .message-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .app-card, .message-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .reply-box {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .reply-box input {
+            flex: 1;
+            padding: 5px;
+        }
+
+        .info-text {
+            background: #e8f4fd;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <h2>🔐 Admin Faiz Store</h2>
+            <input type="text" id="username" placeholder="Nama Pengguna">
+            <input type="password" id="password" placeholder="Kata Sandi">
+            <button onclick="login()">Login</button>
+            <div class="error" id="loginError"></div>
+        </div>
+    </div>
+
+    <div class="admin-panel" id="adminPanel">
+        <div class="top-bar">
+            <div class="logo-area">
+                <img src="https://cdn.phototourl.com/free/2026-06-08-b239a564-3b57-4b13-ba1d-7840a76b2063.png" alt="Logo">
+                <h1>Admin Faiz Store</h1>
+            </div>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        </div>
+
+        <div class="main-content">
+            <div class="content-area">
+                <!-- Halaman Beranda -->
+                <div id="homePage" class="page active">
+                    <h2>🏠 Selamat Datang, Admin!</h2>
+                    <p>Kelola aplikasi, pesan, dan testimoni dari dashboard ini.</p>
+                    <div class="info-text">
+                        <strong>Statistik:</strong><br>
+                        Total Aplikasi: <span id="totalApps">0</span><br>
+                        Total Pesan: <span id="totalMessages">0</span><br>
+                        Total Testimoni: <span id="totalTestimonials">0</span>
+                    </div>
+                </div>
+
+                <!-- Halaman Tambah Aplikasi -->
+                <div id="addAppPage" class="page">
+                    <h2>➕ Tambah Aplikasi Baru</h2>
+                    <form id="addAppForm">
+                        <div class="form-group">
+                            <label>Nama Aplikasi</label>
+                            <input type="text" id="appName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Gambar Aplikasi (URL)</label>
+                            <input type="url" id="appImage" placeholder="https://...">
+                        </div>
+                        <div class="form-group">
+                            <label>Link Download</label>
+                            <input type="url" id="appLink" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Deskripsi</label>
+                            <textarea id="appDesc" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Ukuran (MB/GB)</label>
+                            <input type="text" id="appSize" placeholder="Contoh: 45 MB">
+                        </div>
+                        <button type="submit" class="btn-submit">Tambah Aplikasi</button>
+                    </form>
+                </div>
+
+                <!-- Halaman Pesan -->
+                <div id="messagesPage" class="page">
+                    <h2>💬 Pesan dari User</h2>
+                    <div id="messageList" class="message-list"></div>
+                </div>
+
+                <!-- Halaman Informasi Terbaru -->
+                <div id="infoPage" class="page">
+                    <h2>📢 Informasi Terbaru</h2>
+                    <form id="updateInfoForm">
+                        <div class="form-group">
+                            <label>Informasi Terbaru</label>
+                            <textarea id="latestInfo" rows="3" placeholder="Tulis informasi terbaru..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Update Informasi</button>
+                    </form>
+                    <div style="margin-top: 20px;">
+                        <h3>Informasi Saat Ini:</h3>
+                        <div id="currentInfo" class="info-text"></div>
+                    </div>
+                </div>
+
+                <!-- Halaman Testimoni -->
+                <div id="testimonialsPage" class="page">
+                    <h2>⭐ Testimoni & Balasan</h2>
+                    <div id="testimonialList" class="message-list"></div>
+                </div>
+
+                <!-- Halaman Daftar Aplikasi (Hapus) -->
+                <div id="appListPage" class="page">
+                    <h2>📱 Daftar Aplikasi</h2>
+                    <div id="appListAdmin" class="app-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>Menu Admin</h3>
+                <button class="close-btn" onclick="toggleMenu()">✕</button>
+            </div>
+            <div class="menu-item" onclick="showPage('homePage')">🏠 Halaman Beranda</div>
+            <div class="menu-item" onclick="showPage('addAppPage')">➕ Menambahkan Aplikasi Baru</div>
+            <div class="menu-item" onclick="showPage('messagesPage')">💬 Melihat & Membalas Pesan</div>
+            <div class="menu-item" onclick="showPage('infoPage')">📢 Informasi Terbaru</div>
+            <div class="menu-item" onclick="showPage('testimonialsPage')">⭐ Testimoni & Balasan</div>
+            <div class="menu-item" onclick="showPage('appListPage')">📱 Daftar Aplikasi (Hapus)</div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let apps = JSON.parse(localStorage.getItem('faiz_apps')) || [];
+        let messages = JSON.parse(localStorage.getItem('faiz_messages')) || [];
+        let testimonials = JSON.parse(localStorage.getItem('faiz_testimonials')) || [];
+        let latestInfo = localStorage.getItem('faiz_latestInfo') || 'Selamat datang di Faiz Store!';
+
+        function saveData() {
+            localStorage.setItem('faiz_apps', JSON.stringify(apps));
+            localStorage.setItem('faiz_messages', JSON.stringify(messages));
+            localStorage.setItem('faiz_testimonials', JSON.stringify(testimonials));
+        }
+
+        function login() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            if(user === 'faizstore' && pass === 'admin12') {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                updateStats();
+                loadMessages();
+                loadTestimonials();
+                loadAppList();
+                document.getElementById('latestInfo').value = latestInfo;
+                document.getElementById('currentInfo').innerText = latestInfo;
+            } else {
+                document.getElementById('loginError').innerText = 'Username atau password salah!';
+            }
+        }
+
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            toggleMenu();
+            if(pageId === 'appListPage') loadAppList();
+            if(pageId === 'messagesPage') loadMessages();
+            if(pageId === 'testimonialsPage') loadTestimonials();
+        }
+
+        function updateStats() {
+            document.getElementById('totalApps').innerText = apps.length;
+            document.getElementById('totalMessages').innerText = messages.length;
+            document.getElementById('totalTestimonials').innerText = testimonials.length;
+        }
+
+        // Tambah Aplikasi
+        document.getElementById('addAppForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newApp = {
+                id: Date.now(),
+                name: document.getElementById('appName').value,
+                image: document.getElementById('appImage').value || 'https://via.placeholder.com/100',
+                link: document.getElementById('appLink').value,
+                desc: document.getElementById('appDesc').value,
+                size: document.getElementById('appSize').value
+            };
+            apps.push(newApp);
+            saveData();
+            alert('Aplikasi berhasil ditambahkan!');
+            e.target.reset();
+            updateStats();
+            loadAppList();
+        });
+
+        function loadAppList() {
+            const container = document.getElementById('appListAdmin');
+            if(apps.length === 0) {
+                container.innerHTML = '<p>Tidak ada aplikasi.</p>';
+                return;
+            }
+            container.innerHTML = apps.map(app => `
+                <div class="app-card">
+                    <div>
+                        <strong>${app.name}</strong><br>
+                        <small>${app.size}</small>
+                    </div>
+                    <button class="delete-btn" onclick="deleteApp(${app.id})">Hapus</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteApp(id) {
+            if(confirm('Yakin hapus aplikasi ini?')) {
+                apps = apps.filter(app => app.id !== id);
+                saveData();
+                loadAppList();
+                updateStats();
+            }
+        }
+
+        // Load & Reply Messages
+        function loadMessages() {
+            const container = document.getElementById('messageList');
+            if(messages.length === 0) {
+                container.innerHTML = '<p>Tidak ada pesan.</p>';
+                return;
+            }
+            container.innerHTML = messages.map(msg => `
+                <div class="message-card">
+                    <div>
+                        <strong>${msg.sender}</strong><br>
+                        <small>${msg.message}</small>
+                        ${msg.reply ? `<br><em>Balasan Admin: ${msg.reply}</em>` : ''}
+                    </div>
+                    ${!msg.reply ? `
+                    <div class="reply-box">
+                        <input type="text" id="reply-${msg.id}" placeholder="Balasan...">
+                        <button onclick="sendReply(${msg.id})">Balas</button>
+                    </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function sendReply(msgId) {
+            const replyInput = document.getElementById(`reply-${msgId}`);
+            const reply = replyInput.value;
+            if(reply) {
+                const msg = messages.find(m => m.id === msgId);
+                if(msg) {
+                    msg.reply = reply;
+                    saveData();
+                    loadMessages();
+                }
+            }
+        }
+
+        // Update Info
+        document.getElementById('updateInfoForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            latestInfo = document.getElementById('latestInfo').value;
+            localStorage.setItem('faiz_latestInfo', latestInfo);
+            document.getElementById('currentInfo').innerText = latestInfo;
+            alert('Informasi terbaru telah diupdate!');
+        });
+
+        // Load & Reply Testimonials
+        function loadTestimonials() {
+            const container = document.getElementById('testimonialList');
+            if(testimonials.length === 0) {
+                container.innerHTML = '<p>Tidak ada testimoni.</p>';
+                return;
+            }
+            container.innerHTML = testimonials.map(t => `
+                <div class="message-card">
+                    <div>
+                        <strong>⭐ ${t.user}</strong><br>
+                        <small>Rating: ${t.rating}/5</small><br>
+                        <em>${t.comment}</em>
+                        ${t.reply ? `<br><strong>Balasan Admin:</strong> ${t.reply}` : ''}
+                    </div>
+                    ${!t.reply ? `
+                    <div class="reply-box">
+                        <input type="text" id="testi-reply-${t.id}" placeholder="Balasan...">
+                        <button onclick="replyTestimonial(${t.id})">Balas</button>
+                    </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function replyTestimonial(testId) {
+            const replyInput = document.getElementById(`testi-reply-${testId}`);
+            const reply = replyInput.value;
+            if(reply) {
+                const testi = testimonials.find(t => t.id === testId);
+                if(testi) {
+                    testi.reply = reply;
+                    saveData();
+                    loadTestimonials();
+                }
+            }
+        }
+
+        // Initial load
+        function init() {
+            if(localStorage.getItem('faiz_apps') === null) {
+                // Sample data
+                apps = [
+                    {id: 1, name: 'Aplikasi Contoh', image: 'https://via.placeholder.com/100', link: '#', desc: 'Aplikasi keren', size: '25 MB'}
+                ];
+                saveData();
+            }
+        }
+        init();
+    </script>
+</body>
+</html>
